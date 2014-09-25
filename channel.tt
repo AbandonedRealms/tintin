@@ -1,0 +1,21 @@
+#class channel kill;
+#class channel open;
+
+#alias {channel_received} {
+  #format {strlen} {%L} {$MSDP_CHANNELS};
+  #if {$strlen} {
+    #format {timestamp} {%t} {%H:%M};
+    #var text {$MSDP_CHANNELS};
+    #replace {text} {\r} { };
+    #replace {text} {\n} { };
+    #replace {text} {`0} {<149>};
+    #replace {text} {`2} {<929>};
+    #replace {text} {`6} {<969>};
+    #replace {text} {`@} {<129>};
+    #replace {text} {`#} {<139>};
+    #replace {text} {``} {<099>};
+    #line {log} {log/channel.log} {$timestamp>$text};
+  };
+};
+
+#class channel close;

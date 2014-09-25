@@ -1,0 +1,148 @@
+#class msdp kill;
+#class msdp open;
+
+#read inventory.tt;
+#read affects.tt;
+#read channel.tt;
+
+#format IAC  %a 255;
+#format DONT %a 254;
+#format DO   %a 253;
+#format WONT %a 252;
+#format WILL %a 251;
+#format SB   %a 250;
+#format SE   %a 240;
+
+#format MSDP %a  69;
+
+#format VAR  %a  01;
+#format VAL  %a  02;
+
+#var MSDP_REPORTABLE_VARIABLES {
+  {HEALTH};
+  {HEALTH_MAX};
+  {MANA};
+  {MANA_MAX};
+  {MOVEMENT};
+  {MOVEMENT_MAX};
+  {EXPERIENCE};
+  {EXPERIENCE_TNL};
+  {MONEY};
+  {EXITS};
+  {ROOM_MAP};
+  {AFFECTS};
+  {AREA_NAME};
+  {ROOM_EXITS};
+  {ROOM_NAME};
+  {ROOM_VNUM};
+  {ROOM_DESC};
+  {CHANNELS};
+  {INVENTORY};
+  {ROOM_TERRAIN};
+};
+
+#nop Turn telnet debug off once everything works as it's spammy.;
+#nop #config {debug telnet} {on};
+
+#event {IAC WILL MSDP} {
+  #send {$IAC$DO$MSDP\};
+
+  msdp_report;
+  msdp_list;
+};
+
+#event {IAC SB MSDP} {
+  #if {"%0" == "HEALTH"} {
+    #var hp_change 1;
+  };
+  #elseif {"%0" == "MANA"} {
+    #var mp_change 1;
+  };
+  #elseif {"%0" == "MOVEMENT"} {
+    #var mv_change 1;
+  };
+  #elseif {"%0" == "EXPERIENCE"} {
+    #var xp_change 1;
+  };
+  #elseif {"%0" == "EXPERIENCE_TNL"} {
+    #nop;
+  };
+  #elseif {"%0" == "MONEY"} {
+    #var gp_change 1;
+  };
+  #elseif {"%0" == "AFFECTS"} {
+    #var affects_changed 1;
+  };
+  #elseif {"%0" == "CHANNELS"} {
+    #var channel_received 1;
+  };
+  #elseif {"%0" == "ROOM_VNUM"} {
+    #nop;
+  };
+  #elseif {"%0" == "INVENTORY"} {
+    #var inventory_changed 1;
+  };
+  #elseif {"%0" == "ROOM_VNUM"} {
+    #var room_changed 1;
+  };
+  #elseif {"%0" == "ROOM_DESC"} {
+    #var room_changed 1;
+  };
+  #elseif {"%0" == "ROOM_MAP"} {
+    #var room_changed 1;
+  };
+  #elseif {"%0" == "ROOM_TERRAIN"} {
+    #var room_changed 1;
+  };
+  #var {MSDP_%0} {%1};
+};
+
+#nop This event is generated at the end of an MSDP sub negotiation.;
+#event {IAC SB MSDP IAC SE} {
+  #if {$room_changed} {
+    msdp_room_found;
+    #unvar room_changed;
+  };
+
+  #if {$inventory_changed} {
+    inventory_changed;
+    #unvar inventory_changed;
+  };
+
+  #if {$affects_changed} {
+    affects_changed;
+    #unvar affects_changed;
+  };
+
+  #if {$channel_received} {
+    channel_received;
+    #unvar channel_received;
+  };
+}
+
+#nop Ask the server to report all keys inside REPORTABLE_VARIABLES;
+#alias {msdp_report} {
+  #var result {$IAC$SB$MSDP${VAR}REPORT};
+
+  #foreach {$MSDP_REPORTABLE_VARIABLES[]} {tmp} {
+    #var result {$result${VAL}$tmp};
+  };
+
+  #send {$result$IAC$SE\};
+};
+
+#alias {msdp_list} {
+  #var result {$IAC$SB$MSDP${VAR}SEND};
+
+  #foreach {$MSDP_REPORTABLE_VARIABLES[]} {tmp} {
+    #var result {$result${VAL}$tmp};
+  };
+
+  #send {$result$IAC$SE\};
+};
+
+#alias {msdp_send} {
+  #send {$IAC$SB$MSDP${VAR}SEND${VAL}%0$IAC$SE\};
+};
+
+#class msdp close;

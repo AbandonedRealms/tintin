@@ -1,0 +1,128 @@
+#class msdp_mapper kill;
+#class msdp_mapper open;
+
+#event {SESSION CONNECTED} {
+  #map read maps/msdp.map;
+  #delay {1} {
+    #map flag static on;
+    #map flag nofollow on;
+  };
+};
+
+#alias {msdp_room_found} {
+  #var {roomdesc} {$MSDP_ROOM_DESC};
+  #replace {roomdesc} {\n} { };
+  #replace {roomdesc} {\r} {};
+
+  #var terrain $MSDP_ROOM_TERRAIN;
+
+  #unvar symbol;
+  #unvar terrain_color;
+  #regex $terrain inside {
+    #var symbol *;
+    #var terrain_color <ddd>; 
+  };
+  #regex $terrain hills {
+    #var symbol z;
+    #var terrain_color <cba>;
+  };
+  #regex $terrain forest {
+    #var symbol f;
+    #var terrain_color <aba><188>; 
+  };
+  #regex $terrain city {
+    #var symbol +;
+    #var terrain_color <bbb>;
+  };
+  #regex $terrain field {
+    #var symbol o;
+    #var terrain_color <ada>;
+  };
+  #regex $terrain cave {
+    #var symbol o;
+    #var terrain_color <bbb><188>;
+  };
+  #regex $terrain lagoon {
+    #var symbol ~;
+    #var terrain_color <aed>;
+  };
+  #regex $terrain pond {
+    #var symbol ~;
+    #var terrain_color <ade>;
+  };
+  #regex $terrain ocean {
+    #var symbol ~;
+    #var terrain_color <abe>;
+  };
+  #regex $terrain mountain {
+    #var symbol x;
+    #var terrain_color <ccb><188>;
+  };
+  #regex $terrain road {
+    #var symbol +;
+    #var terrain_color <ddd><188>;
+  };
+  #regex $terrain sand {
+    #var symbol !;
+    #var terrain_color <dda>;
+  };
+  #regex $terrain underwater {
+    #var symbol ~;
+    #var terrain_color <aad><188>;
+  };
+  #regex $terrain river {
+    #var symbol ~;
+    #var terrain_color <bcd>;
+  };
+  #regex $terrain unknown {
+    #var symbol *;
+    #var terrain_color <caa>;
+  };
+  #if {!$symbol} {
+    #echo {UNKNOWN TILE SYMBOL};
+  };
+
+  #var {exits} {$MSDP_ROOM_EXITS};
+  #var {exits_keys} {$MSDP_ROOM_EXITS[]};
+
+  #map goto {$MSDP_ROOM_VNUM};
+  
+  #map set roomarea {$MSDP_AREA_NAME};
+  #map set roomname {$MSDP_ROOM_NAME};
+  #map set roomterrain {$MSDP_ROOM_TERRAIN};
+  #map set roomcolor {$terrain_color};
+  #map set roomsymbol {$symbol};
+  #map set roomdesc {$roomdesc};
+  #foreach {$exits_keys} {exit} {
+  #var short_exit $DIR_NAME[$exit];
+  #format {strlen} {%L} {$short_exit};
+    #if {$strlen == 1} {
+      #map dig {$DIR_NAME[$exit]} {$exits[$exit]};
+    };
+    #elseif {$strlen <10} {
+      #map dig {$exit} {$exits[$exit]};
+    };
+  }
+
+  #map map 65x25 log/map.log;
+};
+
+#alias {savemap} {
+  #map write maps/msdp.map;
+};
+
+#event {SESSION DISCONNECTED} {
+  #map write maps/msdp.map
+}
+
+#var {DIR_NAME}
+{
+  {north} {n}
+  {east} {e}
+  {south} {s}
+  {west} {w}
+  {up} {u}
+  {down} {d}
+}
+
+#class msdp_mapper close;

@@ -1,0 +1,7 @@
+#class config kill;
+#class config open;
+
+#var tmux_main_width 101;
+#var tmux_main_height 51;
+
+#class config close;

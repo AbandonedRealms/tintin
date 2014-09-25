@@ -1,0 +1,27 @@
+#class affects kill;
+#class affects open;
+
+#alias {affects_changed} {
+  #var {affects} {$MSDP_AFFECTS};
+  #var {affects_keys} {$MSDP_AFFECTS[]};
+  #list {affects} {size} {affects_count};
+
+  #line log log/affects.log {\e[2J};
+  #line log log/affects.log {You are affected by:};
+  #foreach {$affects_keys} {affect} {
+    #var count {$affects[$affect]};
+    #format {strlen} {%L} {$affect}; 
+    #if {$strlen} {
+      #math {spaces} {18 - $strlen};
+      #var spacing {};
+      #$spaces {#var spacing {$spacing }};
+      #line log log/affects.log {${affect}${spacing}: $count};
+    };
+  };
+  #math trailing_lines {(23 - $affects_count)};
+  #if {$trailing_lines > 0} {
+    #$trailing_lines {#line log {log/affects.log} { }};
+  };
+};
+
+#class affects close;

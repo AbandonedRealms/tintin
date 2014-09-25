@@ -1,0 +1,32 @@
+#class inventory kill;
+#class inventory open;
+
+#alias {inventory_changed} {
+  #var {inventory} {$MSDP_INVENTORY};
+  #var {inventory_keys} {$MSDP_INVENTORY[]};
+  #list {inventory} {size} {inventory_count};
+
+  #line log log/inventory.log {\e[2J};
+  #line log log/inventory.log {You are carrying:};
+  #foreach {$inventory_keys} {item} {
+    #var count {$inventory[$item]};
+    #if {$count == 0} {
+      #nop;
+    };
+    #elseif {$count == 1} {
+      #line log log/inventory.log {     $item}; 
+    };
+    #elseif {$count < 10} {
+      #line log log/inventory.log {( $count) $item}; 
+    };
+    #else {
+      #line log log/inventory.log {($count) $item}; 
+    };
+  };
+  #math trailing_lines {23 - $inventory_count};
+  #if {$trailing_lines > 0} {
+    #$trailing_lines {#line log {log/inventory.log} { }};
+  };
+};
+
+#class inventory close;
