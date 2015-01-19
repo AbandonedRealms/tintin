@@ -1,7 +1,22 @@
 #class config kill;
 #class config open;
 
-#var tmux_main_width 101;
-#var tmux_main_height 51;
+  #config {AUTO TAB}      {5000}
+  #config {BUFFER SIZE}   {200000}
+  #config {COMMAND COLOR} {<078>}
+  #config {COMMAND ECHO}  {OFF}
+  #config {CONNECT RETRY} {15}
+  #config {HISTORY SIZE}  {1000}
+  #config {LOG}           {RAW}
+  #config {PACKET PATCH}  {0.01}
+  #config {REPEAT CHAR}   {!}
+  #config {REPEAT ENTER}  {ON}
+  #config {SCROLL LOCK}   {ON}
+  #config {SPEEDWALK}     {OFF}
+  #config {TINTIN CHAR}   {#}
+  #config {VERBATIM}      {OFF}
+  #config {VERBATIM CHAR} {\}
+  #config {VERBOSE}       {OFF}
+  #config {WORDWRAP}      {ON}
 
 #class config close;

@@ -7,22 +7,4 @@
   #format {screen_width}  {%C}         {}
   #format {screen_height} {%R}         {}
 
-#CONFIG           {AUTO TAB}  {5000}
-#CONFIG           {BUFFER SIZE}  {200000}
-#CONFIG           {COMMAND COLOR}  {<078>}
-#CONFIG           {COMMAND ECHO}  {OFF}
-#CONFIG           {CONNECT RETRY}  {15}
-#CONFIG           {HISTORY SIZE}  {1000}
-#CONFIG           {LOG}  {RAW}
-#CONFIG           {PACKET PATCH}  {0.01}
-#CONFIG           {REPEAT CHAR}  {!}
-#CONFIG           {REPEAT ENTER}  {ON}
-#CONFIG           {SCROLL LOCK}  {ON}
-#CONFIG           {SPEEDWALK}  {OFF}
-#CONFIG           {TINTIN CHAR}  {#}
-#CONFIG           {VERBATIM}  {OFF}
-#CONFIG           {VERBATIM CHAR}  {\}
-#CONFIG           {VERBOSE}  {OFF}
-#CONFIG           {WORDWRAP}  {ON}
-
 #class ar close

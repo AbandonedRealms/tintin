@@ -22,6 +22,12 @@
   #if {$trailing_lines > 0} {
     #$trailing_lines {#line log {log/affects.log} { }};
   };
+
+  #unvar {strlen};
+  #unvar {spacing};
+  #unvar {trailing_lines};
+  #unvar {affects};
+  #unvar {affects_keys}
 };
 
 #class affects close;
